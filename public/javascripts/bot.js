@@ -17,44 +17,9 @@ bot.use((ctx, next) => {
     });
 });
 
-const sayYoMiddleware = ({reply}, next) => reply('yo').then(() => next());
-
-// Random location on some text messages
-bot.on('text', ({replyWithLocation}, next) => {
-    if (Math.random() > 0.2) {
-        return next();
-    }
-    return Promise.all([replyWithLocation((Math.random() * 180) - 90, (Math.random() * 180) - 90), next()]);
-});
-
-// Text messages handling
-bot.hears('Hey', sayYoMiddleware, (ctx) => {
-    ctx.session.heyCounter = ctx.session.heyCounter || 0;
-    ctx.session.heyCounter++;
-    return ctx.replyWithMarkdown(`_Hey counter:_ ${ctx.session.heyCounter}`);
-});
-
-// Command handling
-bot.command('answer', sayYoMiddleware, (ctx) => {
-    console.log(ctx);
-    console.log(ctx.message);
-    return ctx.reply('*42*', Extra.markdown());
-});
-
-const catPhoto = 'http://lorempixel.com/400/200/cats/';
-bot.command('cat', ({replyWithPhoto}) => replyWithPhoto(catPhoto));
-
-// Streaming photo, in case Telegram doesn't accept direct URL
-bot.command('cat2', ({replyWithPhoto}) => replyWithPhoto({url: catPhoto}));
-
-// Look ma, reply middleware factory
-bot.command('foo', reply('http://coub.com/view/9cjmt'));
-
-// Wow! RegEx
 bot.hears(/reverse (.+)/, ({match, reply}) => {
     return reply(match[1].split('').reverse().join(''));
 });
-
 
 bot.hears(/country (.+)/, ({match, reply}) => {
     const name = match[1].split('').join('');
@@ -68,9 +33,15 @@ bot.hears(/country (.+)/, ({match, reply}) => {
             }
             return reply('Not found!');
         }).catch((err) => {
-            return reply('Try again later');
             console.error(`error during calling ${targetUrl}:\n${err}`);
+            return reply('Try again later');
         });
+});
+
+bot.command('commands', (ctx) => {
+    ctx.reply('Actual commands:\n /commands -return all commands\n' +
+        '/country -return brief country info\n' +
+        '/reverse -reverse text');
 });
 
 exports.createBot = bot;
