@@ -1,6 +1,6 @@
 const Telegraf = require('telegraf');
 const session = require('telegraf/session');
-const BOT_TOKEN = '479147485:AAG8TKsZMEiZGDHNDNiqzzfuqzFsW8dhGtU';
+const BOT_TOKEN = process.env.BOT_TOKEN;
 const bot = new Telegraf(BOT_TOKEN);
 const countries = require('./api/countries.service');
 
@@ -35,6 +35,7 @@ bot.hears(/country (.+)/, ({match, reply}) => {
             return reply('Not found!');
         }).catch((err) => {
             console.error(`error during calling getCountryInfo:\n${err}`);
+            console.log(JSON.stringify(err));
             return reply('Try again later');
         });
 });
