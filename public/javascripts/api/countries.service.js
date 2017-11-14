@@ -7,6 +7,9 @@ const requestOptions = {
 };
 
 const getCountryInfo = (name) => {
+    if (!name) {
+        throw Error('name not specified');
+    }
     const targetUrl = `${url}${name}`;
     const payload = Object.assign({}, requestOptions, {uri: targetUrl});
     return rp(payload);

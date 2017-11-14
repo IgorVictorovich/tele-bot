@@ -1,7 +1,5 @@
 const Telegraf = require('telegraf');
-const Extra = require('telegraf/extra');
 const session = require('telegraf/session');
-const {reply} = Telegraf;
 const BOT_TOKEN = '479147485:AAG8TKsZMEiZGDHNDNiqzzfuqzFsW8dhGtU';
 const bot = new Telegraf(BOT_TOKEN);
 const countries = require('./api/countries.service');
@@ -25,6 +23,9 @@ bot.hears(/country (.+)/, ({match, reply}) => {
     const name = match[1].split('').join('');
     countries.getCountryInfo(name)
         .then((resp) => {
+            if (resp.hasOwnProperty('status')) {
+                return reply(resp.message);
+            }
             if (Array.isArray(resp)) {
                 const capital = resp[0].capital;
                 const population = resp[0].population;
@@ -33,7 +34,7 @@ bot.hears(/country (.+)/, ({match, reply}) => {
             }
             return reply('Not found!');
         }).catch((err) => {
-            console.error(`error during calling ${targetUrl}:\n${err}`);
+            console.error(`error during calling getCountryInfo:\n${err}`);
             return reply('Try again later');
         });
 });
