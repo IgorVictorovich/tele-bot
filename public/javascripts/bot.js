@@ -54,5 +54,4 @@ bot.hears(/reverse (.+)/, ({match, reply}) => {
     return reply(match[1].split('').reverse().join(''));
 });
 
-// Start polling
-bot.startPolling();
+exports.createBot = bot;
