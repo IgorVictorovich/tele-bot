@@ -4,6 +4,7 @@ const session = require('telegraf/session');
 const {reply} = Telegraf;
 const BOT_TOKEN = '479147485:AAG8TKsZMEiZGDHNDNiqzzfuqzFsW8dhGtU';
 const bot = new Telegraf(BOT_TOKEN);
+const countries = require('./api/countries.service');
 
 bot.use(session());
 
@@ -52,6 +53,24 @@ bot.command('foo', reply('http://coub.com/view/9cjmt'));
 // Wow! RegEx
 bot.hears(/reverse (.+)/, ({match, reply}) => {
     return reply(match[1].split('').reverse().join(''));
+});
+
+
+bot.hears(/country (.+)/, ({match, reply}) => {
+    const name = match[1].split('').join('');
+    countries.getCountryInfo(name)
+        .then((resp) => {
+            if (Array.isArray(resp)) {
+                const capital = resp[0].capital;
+                const population = resp[0].population;
+                const answer = `${name} capital is ${capital} with population ${population}`;
+                return reply(answer);
+            }
+            return reply('Not found!');
+        }).catch((err) => {
+            return reply('Try again later');
+            console.error(`error during calling ${targetUrl}:\n${err}`);
+        });
 });
 
 exports.createBot = bot;
